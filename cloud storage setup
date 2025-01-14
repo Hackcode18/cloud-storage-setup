@@ -1,0 +1,97 @@
+To create and configure cloud storage on either AWS S3 or Google Cloud Storage, you need to follow a series of steps to set up the storage bucket, upload example files, and configure appropriate access permissions.
+
+-----AWS S3 Setup-----
+
+Step 1:
+"Create an S3 Bucket":
+1. "Sign in" to your [AWS Management Console](https://aws.amazon.com/console/).
+2. Navigate to "S3" by searching for "S3" in the search bar.
+3. Click on "Create Bucket".
+4. Provide a "unique name" for your bucket. Bucket names must be globally unique.
+5. Select the "region" for your bucket (it’s typically best to choose the region closest to your users).
+6. Configure "options" (you can leave these as default for now).
+7. Set permissions:
+   - Uncheck "Block all public access" if you want to make the bucket publicly accessible. You can choose specific permissions later.
+8. Click "Create".
+
+Step 2: 
+"Upload Files to S3 Bucket":
+1. Click on the newly created bucket in the S3 console.
+2. Click on the "upload" button.
+3. Choose the files you want to upload (you can drag and drop multiple files).
+4. Click "Upload".
+
+Step 3: 
+"Configure Access Permissions":
+1. After uploading, go to the "Permissions" tab of the file.
+2. To make files publicly accessible (for example, if you want to share an image), click "Edit" under the permissions section.
+3. Grant "Read access" for "Everyone (public access)".
+4. Click "Save changes".
+
+Step 4: "Set Bucket Policy (Optional)":
+To control access at a more granular level, you can set a **bucket policy**. For example, to allow public access to all files in your bucket, use this policy:
+-json
+
+code:
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "PublicReadGetObject",
+      "Effect": "Allow",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::YOUR_BUCKET_NAME/*"
+    }
+  ]
+}
+
+Replace `YOUR_BUCKET_NAME` with the name of your bucket.
+
+step 5: 
+"Test and Access Your Files":
+- After configuring access, you can access your files using the URL format:  
+  `https://YOUR_BUCKET_NAME.s3.amazonaws.com/your-file-name`
+
+ ----Google Cloud Storage Setup---
+
+Step 1: 
+"Create a Google Cloud Storage Bucket":
+1. 'Sign in' to your [Google Cloud Console](https://console.cloud.google.com/).
+2. In the left navigation panel, go to 'Cloud Storage' > 'Buckets'.
+3. Click on the 'Create Bucket' button.
+4. Choose a ''global name'' for your bucket (bucket names must be globally unique).
+5. Choose the "location" for your bucket (multi-region, region, etc.).
+6. Choose a "storage class" and ''access control'' (default or fine-grained access).
+7. Click "Create".
+
+Step 2: 
+"Upload Files to the Bucket":
+1. Click on the newly created bucket in the Google Cloud Console.
+2. Click on the **Upload Files** button and select files to upload from your local machine.
+
+Step 3:
+"Configure Access Permissions":
+1. To modify access permissions for your files, go to the **Permissions** tab of the file or bucket.
+2. Click **Add** to add new permissions.
+3. Grant users or groups the necessary access levels. For public access to a file, you can use **IAM** permissions or set the "Object ACLs".
+
+Step 4: 
+"Set Bucket Policy (Optional)":
+You can create a "Bucket Policy" in the Google Cloud Console using IAM roles and permissions, but if you just want to allow public access to all objects, you can use "Object ACLs":
+1. Go to the "Permissions" tab of the bucket.
+2. Click "Add members" and use the "allUsers" or "allAuthenticatedUsers" roles.
+3. For "public read access", grant the "Storage Object Viewer" role.
+
+ Step 5: 
+"Access Your Files"
+- After setting permissions, you can access your files via the URL:  
+'https://storage.googleapis.com/YOUR_BUCKET_NAME/your-file-name`
+
+Example Files and Testing:
+After uploading your example files (e.g., an image or a text file), you can try accessing them using the generated URL. If you’ve configured public access, you should be able to view/download the file directly from the web.
+For example, if you uploaded a file named `sample-image.jpg` to AWS S3, the URL would be:  
+`https://YOUR_BUCKET_NAME.s3.amazonaws.com/sample-image.jpg`
+
+Summary of Permissions:
+Public Access: Use IAM roles or ACLs to grant public access (read or full).
+Private Access: By default, storage buckets are private, and you need to explicitly grant access.
