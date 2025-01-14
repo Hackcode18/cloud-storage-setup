@@ -1,0 +1,242 @@
+----------1. "AWS CloudWatch Setup"--------
+Step 1: 
+"Enable CloudWatch Metrics"
+First, we need to ensure CloudWatch is tracking the key metrics for your application, such as server performance (CPU usage, memory, etc.) or application-specific metrics (error rates, response times, etc.).
+Sign in to AWS and open CloudWatch in the console.
+Head to Metrics and choose the service you want to monitor (e.g., EC2 instances, Lambda, etc.).
+Make sure your application is sending data (if not, you may need to configure your app to push custom metrics).
+
+Step 2: 
+"Set Up Alarms for Alerts"
+Now let’s set up alerts so that if anything goes wrong (like your CPU usage spiking over 80%), you’ll get notified right away.
+Go to Alarms in CloudWatch.
+Click Create Alarm, and choose a metric you care about (like EC2 CPU utilization).
+Set a threshold that, when crossed, will trigger the alarm. For example: "Alert me if CPU usage stays above 80% for 5 minutes."
+Choose actions: You can have CloudWatch notify you by email using Amazon SNS (Simple Notification Service).
+Click Create Alarm to save it.
+
+Step 3: 
+"Set Up Your CloudWatch Dashboard"
+With CloudWatch, you can create a dashboard that brings together all your important metrics into one place. This helps you easily track the health of your app at a glance.
+In the CloudWatch console, go to Dashboards and click Create Dashboard.
+Add widgets (charts, graphs) to visualize the data you care about, like CPU usage or network traffic.
+Organize them in a way that makes sense, and save the dashboard. Now you’ll have a central place to monitor your app's health in real time.
+
+Step 4: 
+"Configure Notifications"
+To make sure you get alerted when something goes wrong (like when your app starts to slow down or an instance fails), you can use SNS to set up email or SMS notifications.
+Create an SNS topic in the AWS console and subscribe to it with your email address or phone number.
+Link this SNS topic to your CloudWatch alarms so you get notified when a threshold is breached.
+
+-----------------2. "Google Cloud Monitoring Setup"------------
+
+Step 1: 
+"Enable Google Cloud Monitoring"
+To monitor your app’s health on Google Cloud, you need to first set up Google Cloud Monitoring. Once it's done, you'll be able to track things like server load, response times, and other key metrics.
+Sign in to Google Cloud Console and go to Cloud Monitoring.
+If you haven’t already, set up a monitoring workspace and ensure your app is reporting metrics either via Cloud Monitoring Agent or the service you're using.
+
+Step 2: 
+"Create Alerting Policies"
+We need to set up alerts to notify you when something isn’t quite right. If your app's performance dips or if a resource usage is too high, you’ll want to be immediately notified.
+In Cloud Monitoring, go to Alerting and click Create Policy.
+Choose the metrics that are important to you, like high CPU usage, slow response times, or error rates.
+Set up the conditions for when the alert should trigger (e.g., if CPU usage is over 80% for more than 5 minutes).
+Add notification channels (email, Slack, etc.) so you can receive alerts as soon as something happens.
+Save the policy.
+
+Step 3: 
+"Build Your Dashboard"
+Creating a dashboard gives you a bird’s eye view of your app's performance. It’s like setting up a real-time performance monitor.
+In Cloud Monitoring, navigate to Dashboards and click Create Dashboard.
+Add widgets like line charts or bar charts to track important metrics (CPU usage, memory usage, etc.).
+Organize everything neatly and save the dashboard so you can always come back and check your app’s health.
+
+Step 4: 
+"Set Up Notification Channels"
+To get alerts when something goes wrong, you’ll need to set up notification channels. You can choose to receive notifications via email, SMS, or Slack, ensuring that you're alerted as soon as possible.
+Go to Notification Channels and add channels like email or Slack.
+Link them to your alerting policies to make sure you’re notified as soon as any threshold is crossed.
+
+-----------3. "Azure Monitor Setup"-----------------
+
+Step 1: 
+"Enable Azure Monitor"
+On Azure, monitoring your app’s performance starts by enabling Azure Monitor, which collects data about your application and infrastructure (VMs, App Services, etc.).
+Sign in to the Azure Portal and search for Azure Monitor.
+Ensure your app or resources are set up to send telemetry data to Azure Monitor (using agents or automatically if you're using Azure resources).
+
+Step 2: 
+"Create Alerts"
+Now that you're collecting metrics, it’s time to set up alerts to monitor your app’s health.
+In Azure Monitor, go to Alerts and click + New Alert Rule.
+Choose the metric you want to monitor (like CPU usage or network activity).
+Set the condition that will trigger an alert (for example: CPU usage exceeding 80% for 5 minutes).
+Link an action group to send you notifications (email, SMS, etc.).
+Click Create alert rule to finish.
+
+Step 3: 
+"Build Your Dashboard"
+With Azure Monitor, you can create a dashboard to easily visualize key metrics for your application. Dashboards allow you to keep track of everything from CPU usage to the number of requests your app is handling.
+Go to Azure Monitor and navigate to Dashboards.
+Click + New Dashboard and start adding tiles for the metrics you want to display.
+Organize these tiles based on importance and save your dashboard.
+
+Step 4:
+"Configure Action Groups":
+Set up Action Groups to receive alerts in the way that’s most convenient for you.
+Create an Action Group to send you notifications (via email, SMS, etc.) when an alert is triggered.
+Attach the Action Group to your alert rules to ensure you stay updated in real-time.
+Summary of What You Get:
+Alerts: Notifications when something goes wrong (e.g., high CPU usage or server errors).
+Dashboards: Real-time views of key metrics, so you can monitor the health of your application easily.
+Notifications: Via email, SMS, or Slack so you're immediately informed of any issues.
+
+
+1. AWS CloudWatch Setup via AWS CLI
+
+Step 1: Enable CloudWatch Metrics
+CloudWatch automatically collects metrics for most AWS services, but if you need to create custom metrics, you can use the `put-metric-data` command:
+
+```bash
+aws cloudwatch put-metric-data --namespace "CustomNamespace" --metric-name "CustomMetric" --value 100 --unit "Count"
+```
+
+This will push a custom metric called `CustomMetric` with a value of `100`.
+
+Step 2: Create an Alarm for CloudWatch
+
+You can set up an alarm using the AWS CLI for a metric (e.g., EC2 CPU utilization):
+
+```bash
+aws cloudwatch put-metric-alarm --alarm-name "HighCPUUtilization" \
+    --metric-name "CPUUtilization" \
+    --namespace "AWS/EC2" \
+    --statistic "Average" \
+    --period 300 \
+    --threshold 80 \
+    --comparison-operator "GreaterThanThreshold" \
+    --evaluation-periods 1 \
+    --alarm-actions "arn:aws:sns:us-west-2:123456789012:NotifyMe" \
+    --dimensions Name=InstanceId,Value=i-1234567890abcdef0
+```
+
+This will create an alarm that triggers if the EC2 CPU utilization exceeds 80% for 5 minutes (300 seconds).
+
+Step 3: Create a CloudWatch Dashboard
+```bash
+aws cloudwatch put-dashboard --dashboard-name "MyAppDashboard" --dashboard-body '{
+  "start": "-PT1H",
+  "period": 60,
+  "widgets": [
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 0,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [ "AWS/EC2", "CPUUtilization", "InstanceId", "i-1234567890abcdef0" ]
+        ],
+        "title": "EC2 CPU Utilization"
+      }
+    }
+  ]
+}'
+```
+
+This command creates a dashboard that displays the CPU utilization of your EC2 instance.
+
+---
+2. Google Cloud Monitoring via gcloud SDK
+
+Step 1: Enable Monitoring (Custom Metrics)
+First, ensure that **Cloud Monitoring API** is enabled. You can create custom metrics programmatically by using the Google Cloud Monitoring API, but let's start with a basic example:
+
+```bash
+gcloud monitoring metrics create custom.googleapis.com/my_custom_metric --metric-kind GAUGE --value-type INT64 --unit "1"
+```
+
+Step 2: Create an Alert Policy
+
+To create an alert for a metric (e.g., CPU usage), first, use the following:
+
+```bash
+gcloud monitoring policies create \
+    --notification-channels "projects/YOUR_PROJECT_ID/notificationChannels/YOUR_CHANNEL_ID" \
+    --condition-display-name "High CPU Usage" \
+    --condition-filter "metric.type="compute.googleapis.com/instance/disk/write_bytes_count" AND resource.type="gce_instance"" \
+    --notification-channel "projects/YOUR_PROJECT_ID/notificationChannels/YOUR_CHANNEL_ID" \
+    --notification-frequency "60s" \
+    --notification-threshold "80" \
+    --duration "10m"
+```
+
+This sets an alert for CPU usage or another metric and sends a notification.
+
+Step 3: Create a Dashboard
+Creating dashboards in **Google Cloud** can be done using the **Google Cloud Monitoring API**, but here’s an example of using `gcloud` to create a basic dashboard:
+
+```bash
+gcloud monitoring dashboards create --display-name "MyApp Dashboard" \
+    --widgets '[
+      {
+        "title": "CPU Usage",
+        "x": 0,
+        "y": 0,
+        "width": 12,
+        "height": 6,
+        "metrics": [
+          {
+            "type": "compute.googleapis.com/instance/disk/write_bytes_count",
+            "labels": {}
+          }
+        ]
+      }
+    ]'
+```
+
+---
+
+3. Azure Monitor via Azure CLI
+
+Step 1: Enable Azure Monitor Metrics Collection
+
+Azure Monitor collects basic metrics automatically, but if you want to monitor custom metrics or specific resources like VMs, you can use the Azure CLI:
+
+```bash
+az monitor metrics list --resource "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroup}/providers/Microsoft.Compute/virtualMachines/{vmName}" --metric "Percentage CPU" --interval PT1M
+```
+
+This command will retrieve CPU usage data for a specific VM.
+
+Step 2: 
+"Create an Alert":
+
+Here’s how you can create an alert based on a metric (e.g., CPU utilization for an Azure VM):
+
+```bash
+az monitor metrics alert create --name "HighCPUAlert" --resource-group "MyResourceGroup" \
+    --scopes "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroup}/providers/Microsoft.Compute/virtualMachines/{vmName}" \
+    --condition "avg Percentage CPU > 80" --action "email={your-email@example.com}"
+This command sets up an alert that triggers if the average CPU percentage exceeds 80%.
+
+Step 3: 
+"Create a Dashboard"
+
+Azure Dashboards can be created using the **Azure Portal**, but you can also use CLI to list and create dashboards. Here’s an example to create a basic dashboard:
+
+"code:"
+
+```bash
+az monitor dashboard create --name "MyAppDashboard" \
+    --resource-group "MyResourceGroup" \
+    --tiles "[{\"title\":\"CPU Usage\",\"metrics\":[{\"name\":\"Percentage CPU\",\"resourceId\":\"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroup}/providers/Microsoft.Compute/virtualMachines/{vmName}\"}]}]"
+
+This will create a dashboard showing the CPU usage of a specified VM.
+Summary of Code Examples:
+
+- AWS CloudWatch: Use `aws cloudwatch put-metric-data`, `aws cloudwatch put-metric-alarm`, and `aws cloudwatch put-dashboard` commands to push metrics, create alarms, and build dashboards.
+- Google Cloud Monitoring: Use `gcloud monitoring metrics`, `gcloud monitoring policies`, and `gcloud monitoring dashboards` commands for custom metrics, alerts, and dashboards.
+- Azure Monitor: Use `az monitor metrics list`, `az monitor metrics alert create`, and `az monitor dashboard create` for collecting metrics, creating alerts, and building dashboards.
